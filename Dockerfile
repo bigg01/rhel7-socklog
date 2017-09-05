@@ -23,8 +23,8 @@ RUN set -x \
   && cd admin/socklog-2.1.0 \
   && package/install \
   && yum -y autoremove gzip tar \
-  && yum -y groupremove 'Development Tools' \
   && yum -y clean all
+#   && yum -y groupremove 'Development Tools' \ make problems
 
 ENV SYSLOG_PORT=8514
 COPY run-socklog.sh /
