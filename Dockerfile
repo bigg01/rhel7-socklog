@@ -14,7 +14,7 @@ FROM registry.access.redhat.com/rhel7:latest
 
 RUN set -x \
   && yum -y update \
-  && yum -y --skip-broken install socat gunzip tar \
+  && yum -y --skip-broken install socat gzip tar kmod \
   && yum -y --skip-broken  groupinstall 'Development Tools' --setopt=group_package_types=mandatory,default,optional \
   && mkdir /package && cd /package \
   && curl -sSO http://smarden.org/socklog/socklog-2.1.0.tar.gz \
@@ -22,7 +22,7 @@ RUN set -x \
   && rm socklog-2.1.0.tar.gz \
   && cd admin/socklog-2.1.0 \
   && package/install \
-  && yum -y autoremove gunzip tar \
+  && yum -y autoremove gzip tar \
   && yum -y groupremove 'Development Tools' \
   && yum -y clean all
 
