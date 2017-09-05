@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: Template
+metadata:
+  creationTimestamp: null
+  name: rhel7-socklog
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    generation: 1
+    labels:
+      app: rhel7-socklog
+    name: rhel7-socklog
+  spec:
+    replicas: 1
+    selector:
+      app: rhel7-socklog
+      deploymentconfig: rhel7-socklog
+    strategy:
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        annotations:
+        labels:
+          app: rhel7-socklog
+          deploymentconfig: rhel7-socklog
+      spec:
+        containers:
+        - env:
+          - name: SYSLOG_PORT
+            value: "${SYSLOG_PORT}"
+          image: rhel7-socklog:latest
+          imagePullPolicy: Always
+          name: rhel7-socklog
+          ports:
+          - containerPort: ${SYSLOG_PORT}
+            protocol: UDP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - rhel7-socklog
+        from:
+          kind: ImageStreamTag
+          name: rhel7-socklog:latest
+      type: ImageChange
+  status: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: rhel7-socklog
+    name: rhel7-socklog
+  spec:
+    ports:
+    - name: ${SYSLOG_PORT}-udp
+      port: ${SYSLOG_PORT}
+      protocol: UDP
+      targetPort: ${SYSLOG_PORT}
+    selector:
+      app: rhel7-socklog
+      deploymentconfig: rhel7-socklog
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    labels:
+      app: rhel7-socklog
+    name: rhel7-socklog
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: rhel7-socklog:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: ${GIT_URL}
+      type: Git
+    strategy:
+      dockerStrategy:
+        from:
+          kind: ImageStreamTag
+          name: rhel7:latest
+      type: Docker
+    triggers:
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+  status:
+    lastVersion: 0
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: rhel7-socklog
+    name: rhel7
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: rhel7-socklog
+    name: rhel7-socklog
+parameters:
+- description: Listening port of the syslog daemon
+  displayName: Syslog Port
+  name: SYSLOG_PORT
+  required: true
+  value: "8514"
+- description: Git repository URL for build
+  displayName: GIT URL
+  name: GIT_URL
+  required: true
+  value: "https://github.com/git001/rhel7-socklog.git"
