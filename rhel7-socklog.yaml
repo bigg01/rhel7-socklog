@@ -71,7 +71,6 @@ objects:
     - name: ${SYSLOG_PORT}-udp
       port: ${SYSLOG_PORT}
       protocol: UDP
-      targetPort: "${SYSLOG_PORT}-udp"
     selector:
       app: rhel7-socklog
       deploymentconfig: rhel7-socklog
@@ -142,15 +141,6 @@ objects:
     generation: 1
     importPolicy: {}
     name: latest
-- apiVersion: v1
-  kind: ImageStream
-  metadata:
-    labels:
-      app: rhel7-socklog
-    generation: 1
-    name: rhel7
-  status:
-    dockerImageRepository: ""
 parameters:
 - description: Listening port of the syslog daemon
   displayName: Syslog Port
