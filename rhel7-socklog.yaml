@@ -101,8 +101,8 @@ objects:
     strategy:
       dockerStrategy:
         from:
-          kind: ImageStreamTag
-          name: rhel7:latest
+          kind: DockerImage
+          name: registry.access.redhat.com/rhel7:latest
       type: Docker
     triggers:
     - type: ConfigChange
@@ -115,13 +115,42 @@ objects:
   metadata:
     labels:
       app: rhel7-socklog
-    name: rhel7
+    name: rhel7-socklog
+- apiVersion: v1
+  generation: 1
+  image:
+    dockerImageLayers: null
+    dockerImageMetadata:
+      ContainerConfig: {}
+      Created: null
+      Id: ""
+      apiVersion: "1.0"
+      kind: DockerImage
+    dockerImageMetadataVersion: "1.0"
+    dockerImageReference: registry.access.redhat.com/rhel7:latest
+    metadata:
+      creationTimestamp: null
+      name: rhel7
+  kind: ImageStreamTag
+  metadata:
+    name: rhel7:latest
+  tag:
+    annotations: null
+    from:
+      kind: DockerImage
+      name: registry.access.redhat.com/rhel7
+    generation: 1
+    importPolicy: {}
+    name: latest
 - apiVersion: v1
   kind: ImageStream
   metadata:
     labels:
       app: rhel7-socklog
-    name: rhel7-socklog
+    generation: 1
+    name: rhel7
+  status:
+    dockerImageRepository: ""
 parameters:
 - description: Listening port of the syslog daemon
   displayName: Syslog Port
