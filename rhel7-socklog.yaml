@@ -71,7 +71,7 @@ objects:
     - name: ${SYSLOG_PORT}-udp
       port: ${SYSLOG_PORT}
       protocol: UDP
-      targetPort: ${SYSLOG_PORT}
+      targetPort: "${SYSLOG_PORT}-udp"
     selector:
       app: rhel7-socklog
       deploymentconfig: rhel7-socklog
